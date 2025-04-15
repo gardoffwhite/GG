@@ -114,7 +114,6 @@ def index():
     return render_template('index.html', character_data=character_data, status_message=status_message)
 
 @app.route('/update', methods=['POST'])
-@app.route('/update', methods=['POST'])
 def update():
     character_name = request.form['charname']
     level = request.form.get('level')
@@ -168,7 +167,6 @@ def update():
         try:
             charedit_resp = session.post(charedit_url, data=update_payload, headers=headers, timeout=timeout_time)
             if charedit_resp.status_code == 200:
-                # ✅ ดึงข้อมูลใหม่หลังอัปเดต
                 updated_data = get_character_data_from_admin(character_name)
                 return render_template('index.html', character_data=updated_data, status_message="✅ อัปเดตข้อมูลสำเร็จ")
             else:
@@ -178,7 +176,6 @@ def update():
             return render_template('index.html', status_message="❌ เกิดข้อผิดพลาดในการอัปเดตข้อมูล")
     else:
         return render_template('index.html', status_message="❌ ไม่สามารถดึงข้อมูลตัวละครได้")
-
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
