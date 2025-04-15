@@ -35,21 +35,25 @@ def get_character_data_from_admin(character_name):
 
     try:
         print("➡️ กำลัง Logout...")
-        session.get(logout_url, headers=headers, timeout=timeout_time)
+        logout_resp = session.get(logout_url, headers=headers, timeout=timeout_time)
+        print("Logout Response:", logout_resp.text)  # Debug
         time.sleep(1)
 
         print("➡️ เข้าหน้า Login...")
-        session.get(login_url, headers=headers, timeout=timeout_time)
+        login_resp = session.get(login_url, headers=headers, timeout=timeout_time)
+        print("Login Response:", login_resp.text)  # Debug
         time.sleep(1)
 
-        print("➡️ กำลัง Login...")
+        print("➡️ กำลังกด Login...")
         login_resp = session.post(login_url, data=login_payload, headers=headers, timeout=timeout_time)
+        print("Login POST Response:", login_resp.text)  # Debug
         if "Logout" not in login_resp.text:
             return {"error": "❌ Login ไม่สำเร็จ"}
         time.sleep(1)
 
         print("➡️ เข้าหน้า charedit.php...")
-        session.get(charedit_url, headers=headers, timeout=timeout_time)
+        charedit_resp = session.get(charedit_url, headers=headers, timeout=timeout_time)
+        print("charedit.php Response:", charedit_resp.text)  # Debug
         time.sleep(1)
 
         print("➡️ ส่งชื่อค้นหา:", character_name)
@@ -58,6 +62,7 @@ def get_character_data_from_admin(character_name):
             "searchname": "Submit"
         }
         char_resp = session.post(charedit_url, data=char_payload, headers=headers, timeout=timeout_time)
+        print("Character Search Response:", char_resp.text)  # Debug
         time.sleep(1)
 
         soup_char = BeautifulSoup(char_resp.text, "html.parser")
