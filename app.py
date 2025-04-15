@@ -3,6 +3,7 @@ import os
 import time
 import requests
 from bs4 import BeautifulSoup
+from threading import Lock  # 🔒 ใช้สำหรับล็อก
 
 app = Flask(__name__)
 
@@ -23,14 +24,14 @@ headers = {
 }
 
 timeout_time = 20
-searched_names = set()  # เก็บรายชื่อที่เคยค้นหาแล้ว
+
+# 🔒 เพิ่มตัวแปรล็อก
+processing_lock = Lock()
 
 def get_character_data_from_admin(character_name):
-    if character_name in searched_names:
-        print("❌ ชื่อนี้ถูกค้นหาไปแล้ว:", character_name)
-        return {"error": "ชื่อตัวละครนี้ถูกใช้งานแล้ว กรุณากรอกชื่อใหม่"}
-
-    searched_names.add(character_name)
+    # ❗ ตรวจสอบว่าอีกคำขอหนึ่งกำลังทำงานอยู่ไหม
+    if not processing_lock.acquire(blocking=False):
+        return {"error": "⚠️ ระบบกำลังประมวลผลคำขอก่อนหน้า กรุณารอสักครู่แล้วลองใหม่อีกครั้ง"}
 
     try:
         print("➡️ กำลัง Logout...")
@@ -96,6 +97,9 @@ def get_character_data_from_admin(character_name):
     except requests.exceptions.RequestException as e:
         return {"error": f"⚠️ เกิดข้อผิดพลาด: {e}"}
 
+    finally:
+        processing_lock.release()  # ✅ ปลดล็อกเมื่อเสร็จไม่ว่าจะสำเร็จหรือผิดพลาด
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     character_data = None
@@ -110,7 +114,6 @@ def update():
     character_data = get_character_data_from_admin(character_name)
 
     if character_data and 'error' not in character_data:
-        # จำลองการอัปเดต — สามารถเพิ่มระบบส่งกลับไปยังหน้าแก้ไขจริงได้
         character_data['Level'] = request.form.get('level', character_data['Level'])
         character_data['EXP'] = request.form.get('exp', character_data['EXP'])
 
