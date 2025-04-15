@@ -29,9 +29,12 @@ connected_to_admin = False
 def connect_to_admin():
     global connected_to_admin
     try:
+        # ล็อกอิน
         session.get(login_url, headers=headers, timeout=timeout_time)
         login_resp = session.post(login_url, data=login_payload, headers=headers, timeout=timeout_time)
+        
         if "Logout" in login_resp.text:
+            # เชื่อมต่อไปยังหน้าจัดการตัวละคร
             charedit_page = session.get(charedit_url, headers=headers, timeout=timeout_time)
             if charedit_page.status_code == 200:
                 connected_to_admin = True
@@ -105,23 +108,37 @@ def index():
 
     if request.method == 'POST':
         character_name = request.form['charname']
-        character_data = get_character_data_from_admin(character_name)
-        if not character_data:
-            character_data = {"error": "❌ ไม่สามารถดึงข้อมูลตัวละครได้"}
+        if character_name:  # ตรวจสอบว่ามีการกรอกชื่อหรือไม่
+            character_data = get_character_data_from_admin(character_name)
+            if not character_data:
+                character_data = {"error": "❌ ไม่สามารถดึงข้อมูลตัวละครได้"}
+        else:
+            character_data = {"error": "❌ กรุณากรอกชื่อของตัวละคร"}
 
     return render_template('index.html', character_data=character_data, status_message=status_message)
 
 @app.route('/update', methods=['POST'])
 def update():
     character_name = request.form['charname']
+    level = request.form.get('level')
+    exp = request.form.get('exp')
+
+    if not character_name:
+        return render_template('index.html', status_message="❌ กรุณากรอกชื่อของตัวละคร")
+
     character_data = get_character_data_from_admin(character_name)
     if character_data:
-        character_data['Character Name'] = request.form['charname']
-        character_data['Level'] = request.form['level']
-        character_data['EXP'] = request.form['exp']
-        # เพิ่ม update field อื่นๆ ได้
+        # อัปเดตข้อมูลที่ได้รับจากฟอร์ม
+        if level:
+            character_data['Level'] = level
+        if exp:
+            character_data['EXP'] = exp
 
-    return render_template('index.html', character_data=character_data)
+        # หากต้องการอัปเดตข้อมูลอื่นๆ เพิ่มเติมสามารถเพิ่มได้ที่นี่
+
+        return render_template('index.html', character_data=character_data, status_message="✅ อัปเดตข้อมูลสำเร็จ")
+    else:
+        return render_template('index.html', status_message="❌ ไม่สามารถดึงข้อมูลตัวละครได้")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
