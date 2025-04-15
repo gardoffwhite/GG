@@ -1,150 +1,151 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แก้ไขข้อมูลตัวละคร</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        h2 {
-            text-align: center;
-        }
-        form {
-            margin-top: 20px;
-        }
-        label {
-            font-size: 16px;
-        }
-        input {
-            padding: 8px;
-            font-size: 14px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <h2>แก้ไขข้อมูลตัวละคร</h2>
+from flask import Flask, render_template, request
+import os
+import requests
+from bs4 import BeautifulSoup
 
-    <!-- ฟอร์มค้นหาตัวละคร -->
-    <form action="/" method="POST">
-        <label for="charname">ชื่อตัวละคร:</label><br>
-        <input type="text" id="charname" name="charname" required><br><br>
-        <button type="submit">ค้นหาตัวละคร</button>
-    </form>
+app = Flask(__name__)
 
-    <!-- แสดงข้อมูลตัวละครในตาราง -->
-    {% if character_data %}
-        <table>
-            <thead>
-                <tr>
-                    <th>หัวข้อ</th>
-                    <th>ข้อมูล</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for key, value in character_data.items() %}
-                <tr>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+# สร้าง session สำหรับการเชื่อมต่อ
+session = requests.Session()
 
-        <!-- ฟอร์มแก้ไขข้อมูล -->
-        <form action="/update" method="POST">
-            <h3>อัปเดตข้อมูลตัวละคร</h3>
+# URL สำหรับ logout, login และหน้า charedit.php
+logout_url = "http://nage-warzone.com/admin/?logout=session_id()"
+login_url = "http://nage-warzone.com/admin/index.php"
+charedit_url = "http://nage-warzone.com/admin/charedit.php"
 
-            <label for="charname">ชื่อตัวละคร:</label><br>
-            <input type="text" id="charname" name="charname" value="{{ character_data['Character Name'] }}"><br><br>
+# ข้อมูลฟอร์มล็อกอิน
+login_payload = {
+    "username": "admin",  # ชื่อผู้ใช้งาน
+    "password": "3770",    # รหัสผ่าน
+    "submit": "Submit"     # ค่าจากปุ่ม submit
+}
 
-            <label for="level">เลเวล:</label><br>
-            <input type="text" id="level" name="level" value="{{ character_data['Level'] }}"><br><br>
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+}
 
-            <label for="exp">EXP:</label><br>
-            <input type="text" id="exp" name="exp" value="{{ character_data['EXP'] }}"><br><br>
+timeout_time = 20
 
-            <label for="eclv">ecLv:</label><br>
-            <input type="text" id="eclv" name="eclv" value="{{ character_data['ecLv'] }}"><br><br>
+# ฟังก์ชันสำหรับดึงข้อมูลจากหน้าเว็บที่เป็น admin
+def get_character_data_from_admin(character_name):
+    # ขั้นตอนที่ 1: ออกจากระบบ (logout)
+    try:
+        logout_resp = session.get(logout_url, headers=headers, timeout=timeout_time)
+        print("Logout response code:", logout_resp.status_code)
+    except requests.exceptions.RequestException as e:
+        print("⚠️ Error/Timeout ตอน logout:", e)
 
-            <label for="ecexp">ecEXP:</label><br>
-            <input type="text" id="ecexp" name="ecexp" value="{{ character_data['ecEXP'] }}"><br><br>
+    # ขั้นตอนที่ 2: เข้าไปที่หน้า login เพื่อเตรียม session
+    try:
+        login_page_resp = session.get(login_url, headers=headers, timeout=timeout_time)
+        print("Login page response code:", login_page_resp.status_code)
+    except requests.exceptions.RequestException as e:
+        print("เกิดข้อผิดพลาดตอนเข้าหน้า login:", e)
+        return None
 
-            <label for="str">STR:</label><br>
-            <input type="text" id="str" name="str" value="{{ character_data['STR'] }}"><br><br>
+    # ขั้นตอนที่ 3: ส่งข้อมูลล็อกอิน
+    try:
+        login_resp = session.post(login_url, data=login_payload, headers=headers, timeout=timeout_time)
+        print("Login response code:", login_resp.status_code)
+    except requests.exceptions.RequestException as e:
+        print("เกิดข้อผิดพลาดตอนส่งข้อมูลล็อกอิน:", e)
+        return None
 
-            <label for="lvpoint">LvPoint:</label><br>
-            <input type="text" id="lvpoint" name="lvpoint" value="{{ character_data['LvPoint'] }}"><br><br>
+    # เช็คว่าล็อกอินสำเร็จหรือไม่
+    if "Logout" not in login_resp.text:
+        print("❌ Login Failed")
+        return None
 
-            <label for="dex">DEX:</label><br>
-            <input type="text" id="dex" name="dex" value="{{ character_data['DEX'] }}"><br><br>
+    # ขั้นตอนที่ 4: เข้าไปที่หน้า charedit.php หลังล็อกอิน
+    try:
+        charedit_page_resp = session.get(charedit_url, headers=headers, timeout=timeout_time)
+        if charedit_page_resp.status_code != 200:
+            print("❌ ไม่สามารถเข้าหน้า charedit.php ได้")
+            return None
+    except requests.exceptions.RequestException as e:
+        print("เกิดข้อผิดพลาดตอนเข้าหน้า charedit.php:", e)
+        return None
 
-            <label for="skpoint">SkPoint:</label><br>
-            <input type="text" id="skpoint" name="skpoint" value="{{ character_data['SkPoint'] }}"><br><br>
+    # ขั้นตอนที่ 5: ค้นหาตัวละครจากฟอร์ม
+    char_payload = {
+        "charname": character_name,  # ใช้ชื่อจากฟอร์ม
+        "searchname": "Submit"
+    }
 
-            <label for="esp">ESP:</label><br>
-            <input type="text" id="esp" name="esp" value="{{ character_data['ESP'] }}"><br><br>
+    try:
+        char_resp = session.post(charedit_url, data=char_payload, headers=headers, timeout=timeout_time)
+        print("Response code จากการส่งฟอร์มค้นหาตัวละคร:", char_resp.status_code)
+    except requests.exceptions.RequestException as e:
+        print("เกิดข้อผิดพลาดตอนส่งฟอร์มค้นหาตัวละคร:", e)
+        return None
 
-            <label for="lic">LIC:</label><br>
-            <input type="text" id="lic" name="lic" value="{{ character_data['LIC'] }}"><br><br>
+    # --- ดึงข้อมูลจาก placeholder และจัดเรียง ---
+    soup_char = BeautifulSoup(char_resp.text, "html.parser")
+    placeholders = soup_char.find_all('input', {'placeholder': True})
 
-            <label for="spt">SPT:</label><br>
-            <input type="text" id="spt" name="spt" value="{{ character_data['SPT'] }}"><br><br>
+    # สร้าง dictionary สำหรับจัดเรียงข้อมูล
+    data = {}
 
-            <label for="money">Money:</label><br>
-            <input type="text" id="money" name="money" value="{{ character_data['Money'] }}"><br><br>
+    # ดึง placeholder และจัดเก็บใน dictionary
+    for placeholder in placeholders:
+        field_name = placeholder.get('name')
+        placeholder_value = placeholder.get('placeholder')
+        data[field_name] = placeholder_value
 
-            <label for="int">INT:</label><br>
-            <input type="text" id="int" name="int" value="{{ character_data['INT'] }}"><br><br>
+    # จัดเรียงข้อมูลตามหัวข้อ
+    sorted_data = {
+        "Character Name": data.get("charname", ""),
+        "Level": data.get("lv", ""),
+        "EXP": data.get("exp", ""),
+        "ecLv": data.get("eclv", ""),
+        "ecEXP": data.get("ecexp", ""),
+        "STR": data.get("str", ""),
+        "LvPoint": data.get("lvpoint", ""),
+        "DEX": data.get("dex", ""),
+        "SkPoint": data.get("skpoint", ""),
+        "ESP": data.get("esp", ""),
+        "LIC": data.get("lic", ""),
+        "SPT": data.get("spt", ""),
+        "Money": data.get("money", ""),
+        "INT": data.get("int", ""),
+        "Bank": data.get("bankmoney", ""),
+        "Map": data.get("cmap", ""),
+        "Hero": data.get("hero", ""),
+        "X": data.get("x", ""),
+        "Y": data.get("y", ""),
+        "Z": data.get("z", "")
+    }
 
-            <label for="bankmoney">Bank:</label><br>
-            <input type="text" id="bankmoney" name="bankmoney" value="{{ character_data['Bank'] }}"><br><br>
+    return sorted_data
 
-            <label for="cmap">Map:</label><br>
-            <input type="text" id="cmap" name="cmap" value="{{ character_data['Map'] }}"><br><br>
+# หน้าแรกแสดงข้อมูล
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    character_data = None
+    if request.method == 'POST':
+        # รับชื่อจากฟอร์มค้นหา
+        character_name = request.form['charname']
+        character_data = get_character_data_from_admin(character_name)
+        if not character_data:
+            character_data = {"error": "ไม่สามารถดึงข้อมูลจากเซิร์ฟเวอร์ได้"}  # แสดงข้อความหากไม่สามารถดึงข้อมูล
+    return render_template('index.html', character_data=character_data)
 
-            <label for="hero">Hero:</label><br>
-            <input type="text" id="hero" name="hero" value="{{ character_data['Hero'] }}"><br><br>
+# เส้นทางสำหรับอัปเดตข้อมูลตัวละคร
+@app.route('/update', methods=['POST'])
+def update():
+    # รับข้อมูลจากฟอร์ม
+    character_name = request.form['charname']  # รับชื่อที่ค้นหา
+    character_data = get_character_data_from_admin(character_name)  # ดึงข้อมูลจากการ scraping ใหม่
+    if character_data:
+        character_data['Character Name'] = request.form['charname']
+        character_data['Level'] = request.form['level']
+        character_data['EXP'] = request.form['exp']
+        # คุณสามารถเพิ่มการอัปเดตข้อมูลอื่นๆ ได้ที่นี่
 
-            <label for="x">X:</label><br>
-            <input type="text" id="x" name="x" value="{{ character_data['X'] }}"><br><br>
+    # แสดงข้อมูลที่อัปเดตแล้ว
+    return render_template('index.html', character_data=character_data)
 
-            <label for="y">Y:</label><br>
-            <input type="text" id="y" name="y" value="{{ character_data['Y'] }}"><br><br>
-
-            <label for="z">Z:</label><br>
-            <input type="text" id="z" name="z" value="{{ character_data['Z'] }}"><br><br>
-
-            <button type="submit">บันทึกการเปลี่ยนแปลง</button>
-        </form>
-    {% else %}
-        <p>ไม่พบข้อมูลตัวละคร กรุณาค้นหาตัวละครอีกครั้ง</p>
-    {% endif %}
-</body>
-</html>
+if __name__ == '__main__':
+    # ใช้พอร์ตจากตัวแปรสภาพแวดล้อม PORT หรือใช้พอร์ต 5000 ถ้าไม่มี
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
