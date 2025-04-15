@@ -46,6 +46,14 @@
         button:hover {
             background-color: #45a049;
         }
+        .error {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -58,8 +66,13 @@
         <button type="submit">ค้นหาตัวละคร</button>
     </form>
 
+    <!-- แสดงข้อความ Error ถ้ามี -->
+    {% if character_data and character_data.error %}
+        <div class="error">{{ character_data.error }}</div>
+    {% endif %}
+
     <!-- แสดงข้อมูลตัวละครในตาราง -->
-    {% if character_data %}
+    {% if character_data and not character_data.error %}
         <table>
             <thead>
                 <tr>
