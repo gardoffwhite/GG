@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 
 # ฟังก์ชันสำหรับดึงข้อมูลจากหน้าเว็บที่เป็น admin
-def get_character_data_from_admin():
-    url = 'http://your-game-admin-url/charedit.php'  # URL ของหน้า admin
+def get_character_data_from_admin(character_name):
+    url = f'http://your-game-admin-url/charedit.php?charname={character_name}'  # ใช้ชื่อเพื่อค้นหาตัวละคร
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
     }
@@ -21,7 +21,6 @@ def get_character_data_from_admin():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # ดึงข้อมูลตัวละครจาก input หรือ element ที่ต้องการ
-    # ในที่นี้จะสมมุติว่าเราดึงค่าจาก placeholder หรือ input field
     character_data = {
         "Character Name": soup.find('input', {'placeholder': 'Character Name'}).get('value', ''),
         "Level": soup.find('input', {'placeholder': 'Level'}).get('value', ''),
@@ -47,19 +46,23 @@ def get_character_data_from_admin():
     return character_data
 
 # หน้าแรกแสดงข้อมูล
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    # ดึงข้อมูลจาก admin ผ่านการ web scraping
-    character_data = get_character_data_from_admin()
-    if not character_data:
-        character_data = {"error": "ไม่สามารถดึงข้อมูลจากเซิร์ฟเวอร์ได้"}  # แสดงข้อความหากไม่สามารถดึงข้อมูล
+    character_data = None
+    if request.method == 'POST':
+        # รับชื่อจากฟอร์มค้นหา
+        character_name = request.form['charname']
+        character_data = get_character_data_from_admin(character_name)
+        if not character_data:
+            character_data = {"error": "ไม่สามารถดึงข้อมูลจากเซิร์ฟเวอร์ได้"}  # แสดงข้อความหากไม่สามารถดึงข้อมูล
     return render_template('index.html', character_data=character_data)
 
 # เส้นทางสำหรับอัปเดตข้อมูลตัวละคร
 @app.route('/update', methods=['POST'])
 def update():
     # รับข้อมูลจากฟอร์ม
-    character_data = get_character_data_from_admin()  # ดึงข้อมูลจากการ scraping ใหม่
+    character_name = request.form['charname']  # รับชื่อที่ค้นหา
+    character_data = get_character_data_from_admin(character_name)  # ดึงข้อมูลจากการ scraping ใหม่
     if character_data:
         character_data['Character Name'] = request.form['charname']
         character_data['Level'] = request.form['level']
