@@ -22,19 +22,15 @@ headers = {
 }
 
 timeout_time = 20
-
-# สถานะการเชื่อมต่อระบบแอดมิน
 connected_to_admin = False
 
 def connect_to_admin():
     global connected_to_admin
     try:
-        # ล็อกอิน
         session.get(login_url, headers=headers, timeout=timeout_time)
         login_resp = session.post(login_url, data=login_payload, headers=headers, timeout=timeout_time)
-        
+
         if "Logout" in login_resp.text:
-            # เชื่อมต่อไปยังหน้าจัดการตัวละคร
             charedit_page = session.get(charedit_url, headers=headers, timeout=timeout_time)
             if charedit_page.status_code == 200:
                 connected_to_admin = True
@@ -108,7 +104,7 @@ def index():
 
     if request.method == 'POST':
         character_name = request.form['charname']
-        if character_name:  # ตรวจสอบว่ามีการกรอกชื่อหรือไม่
+        if character_name:
             character_data = get_character_data_from_admin(character_name)
             if not character_data:
                 character_data = {"error": "❌ ไม่สามารถดึงข้อมูลตัวละครได้"}
@@ -140,19 +136,17 @@ def update():
     y = request.form.get('y')
     z = request.form.get('z')
 
-    # ตรวจสอบว่ามีการกรอกชื่อของตัวละครหรือไม่
     if not character_name:
         return render_template('index.html', status_message="❌ กรุณากรอกชื่อของตัวละคร")
 
     character_data = get_character_data_from_admin(character_name)
     if character_data:
-        # เตรียมข้อมูลที่จะส่งไปยังระบบแอดมิน
         update_payload = {
             "charname": character_name,
-            "level": level if level else character_data['Level'],
+            "lv": level if level else character_data['Level'],
             "exp": exp if exp else character_data['EXP'],
-            "ecLv": ecLv if ecLv else character_data['ecLv'],
-            "ecEXP": ecEXP if ecEXP else character_data['ecEXP'],
+            "eclv": ecLv if ecLv else character_data['ecLv'],
+            "ecexp": ecEXP if ecEXP else character_data['ecEXP'],
             "str": str_value if str_value else character_data['STR'],
             "lvpoint": lvpoint if lvpoint else character_data['LvPoint'],
             "dex": dex if dex else character_data['DEX'],
@@ -171,13 +165,10 @@ def update():
         }
 
         try:
-            # ส่งข้อมูลอัปเดตไปยังระบบแอดมิน
             charedit_resp = session.post(charedit_url, data=update_payload, headers=headers, timeout=timeout_time)
             if charedit_resp.status_code == 200:
-                # หากการอัปเดตสำเร็จ
                 return render_template('index.html', character_data=character_data, status_message="✅ อัปเดตข้อมูลสำเร็จ")
             else:
-                # หากไม่สามารถอัปเดตได้
                 return render_template('index.html', status_message="❌ ไม่สามารถอัปเดตข้อมูลได้")
         except Exception as e:
             print(f"⚠️ เกิดข้อผิดพลาดในการส่งข้อมูลอัปเดต: {e}")
