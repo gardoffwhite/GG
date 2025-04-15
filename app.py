@@ -5,12 +5,15 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+# สร้าง session สำหรับทำงานกับเว็บ
 session = requests.Session()
 
+# URL สำหรับเชื่อมต่อระบบแอดมิน
 logout_url = "http://nage-warzone.com/admin/?logout=session_id()"
 login_url = "http://nage-warzone.com/admin/index.php"
 charedit_url = "http://nage-warzone.com/admin/charedit.php"
 
+# ข้อมูลสำหรับล็อกอิน
 login_payload = {
     "username": "admin",
     "password": "3770",
@@ -24,6 +27,7 @@ headers = {
 timeout_time = 20
 connected_to_admin = False
 
+# ฟังก์ชันเชื่อมต่อระบบแอดมิน
 def connect_to_admin():
     global connected_to_admin
     try:
@@ -41,6 +45,22 @@ def connect_to_admin():
         print("⚠️ เกิดข้อผิดพลาดตอนเชื่อมต่อ:", e)
     return False
 
+# ฟังก์ชันออกจากระบบแอดมิน
+def logout_from_admin():
+    try:
+        logout_resp = session.get(logout_url, headers=headers, timeout=timeout_time)
+        if logout_resp.status_code == 200:
+            global connected_to_admin
+            connected_to_admin = False
+            print("✅ ออกจากระบบสำเร็จ")
+            return True
+        else:
+            print("❌ ไม่สามารถออกจากระบบได้")
+    except Exception as e:
+        print(f"⚠️ เกิดข้อผิดพลาดในการออกจากระบบ: {e}")
+    return False
+
+# ฟังก์ชันดึงข้อมูลตัวละครจากระบบแอดมิน
 def get_character_data_from_admin(character_name):
     if not connected_to_admin:
         print("❌ ยังไม่ได้เชื่อมต่อระบบแอดมิน")
@@ -90,6 +110,7 @@ def get_character_data_from_admin(character_name):
         print("⚠️ Error: ไม่สามารถค้นหาตัวละคร:", e)
         return None
 
+# หน้าแรก
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global connected_to_admin
@@ -113,6 +134,7 @@ def index():
 
     return render_template('index.html', character_data=character_data, status_message=status_message)
 
+# ฟังก์ชันอัปเดตข้อมูลตัวละคร
 @app.route('/update', methods=['POST'])
 def update():
     character_name = request.form['charname']
@@ -177,6 +199,7 @@ def update():
     else:
         return render_template('index.html', status_message="❌ ไม่สามารถดึงข้อมูลตัวละครได้")
 
+# เริ่มต้นแอปพลิเคชัน
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
