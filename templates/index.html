@@ -1,12 +1,102 @@
-{% if status_message %}
-  <p>{{ status_message }}</p>
-{% endif %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Nage Warzone - ค้นหาตัวละคร</title>
+    <style>
+        body {
+            font-family: "Sarabun", sans-serif;
+            margin: 40px;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 250px;
+            font-size: 16px;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
 
-<form method="post">
-  <input type="text" name="charname" placeholder="กรอกชื่อตัวละคร">
-  <button type="submit">ค้นหา</button>
-</form>
+    <h1>ระบบค้นหาตัวละคร (Admin)</h1>
 
-{% if character_data %}
-  <pre>{{ character_data }}</pre>
-{% endif %}
+    {% if status_message %}
+        <div class="status {{ 'success' if '✅' in status_message else 'error' }}">
+            {{ status_message }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <input type="text" name="charname" placeholder="กรอกชื่อตัวละคร" required>
+        <button type="submit">ค้นหา</button>
+    </form>
+
+    {% if character_data %}
+        {% if character_data.error %}
+            <div class="status error">{{ character_data.error }}</div>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ข้อมูล</th>
+                        <th>ค่า</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in character_data.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>
