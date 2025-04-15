@@ -59,6 +59,10 @@
             background-color: #007bff;
             color: white;
         }
+        .editbox {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -104,25 +108,25 @@
                 <input type="hidden" name="charname" value="{{ character_data.get('Character Name', '') }}">
 
                 <!-- ฟิลด์ที่ให้ผู้ใช้กรอกค่า -->
-                <input type="number" name="level" value="{{ character_data['Level'] }}" placeholder="Level"><br>
-                <input type="number" name="exp" value="{{ character_data['EXP'] }}" placeholder="EXP"><br>
-                <input type="number" name="ecLv" value="{{ character_data['ecLv'] }}" placeholder="ecLv"><br>
-                <input type="number" name="ecEXP" value="{{ character_data['ecEXP'] }}" placeholder="ecEXP"><br>
-                <input type="number" name="str" value="{{ character_data['STR'] }}" placeholder="STR"><br>
-                <input type="number" name="lvpoint" value="{{ character_data['LvPoint'] }}" placeholder="LvPoint"><br>
-                <input type="number" name="dex" value="{{ character_data['DEX'] }}" placeholder="DEX"><br>
-                <input type="number" name="skpoint" value="{{ character_data['SkPoint'] }}" placeholder="SkPoint"><br>
-                <input type="number" name="esp" value="{{ character_data['ESP'] }}" placeholder="ESP"><br>
-                <input type="number" name="lic" value="{{ character_data['LIC'] }}" placeholder="LIC"><br>
-                <input type="number" name="spt" value="{{ character_data['SPT'] }}" placeholder="SPT"><br>
-                <input type="number" name="money" value="{{ character_data['Money'] }}" placeholder="Money"><br>
-                <input type="number" name="int" value="{{ character_data['INT'] }}" placeholder="INT"><br>
-                <input type="number" name="bankmoney" value="{{ character_data['Bank'] }}" placeholder="Bank"><br>
-                <input type="text" name="cmap" value="{{ character_data['Map'] }}" placeholder="Map"><br>
-                <input type="text" name="hero" value="{{ character_data['Hero'] }}" placeholder="Hero"><br>
-                <input type="number" name="x" value="{{ character_data['X'] }}" placeholder="X"><br>
-                <input type="number" name="y" value="{{ character_data['Y'] }}" placeholder="Y"><br>
-                <input type="number" name="z" value="{{ character_data['Z'] }}" placeholder="Z"><br>
+                <input type="number" name="level" value="{{ character_data['Level'] }}" placeholder="Level" class="editbox"><br>
+                <input type="number" name="exp" value="{{ character_data['EXP'] }}" placeholder="EXP" class="editbox"><br>
+                <input type="number" name="ecLv" value="{{ character_data['ecLv'] }}" placeholder="ecLv" class="editbox"><br>
+                <input type="number" name="ecEXP" value="{{ character_data['ecEXP'] }}" placeholder="ecEXP" class="editbox"><br>
+                <input type="number" name="str" value="{{ character_data['STR'] }}" placeholder="STR" class="editbox"><br>
+                <input type="number" name="lvpoint" value="{{ character_data['LvPoint'] }}" placeholder="LvPoint" class="editbox"><br>
+                <input type="number" name="dex" value="{{ character_data['DEX'] }}" placeholder="DEX" class="editbox"><br>
+                <input type="number" name="skpoint" value="{{ character_data['SkPoint'] }}" placeholder="SkPoint" class="editbox"><br>
+                <input type="number" name="esp" value="{{ character_data['ESP'] }}" placeholder="ESP" class="editbox"><br>
+                <input type="number" name="lic" value="{{ character_data['LIC'] }}" placeholder="LIC" class="editbox"><br>
+                <input type="number" name="spt" value="{{ character_data['SPT'] }}" placeholder="SPT" class="editbox"><br>
+                <input type="number" name="money" value="{{ character_data['Money'] }}" placeholder="Money" class="editbox"><br>
+                <input type="number" name="int" value="{{ character_data['INT'] }}" placeholder="INT" class="editbox"><br>
+                <input type="number" name="bankmoney" value="{{ character_data['Bank'] }}" placeholder="Bank" class="editbox"><br>
+                <input type="text" name="cmap" value="{{ character_data['Map'] }}" placeholder="Map" class="editbox"><br>
+                <input type="text" name="hero" value="{{ character_data['Hero'] }}" placeholder="Hero" class="editbox"><br>
+                <input type="number" name="x" value="{{ character_data['X'] }}" placeholder="X" class="editbox"><br>
+                <input type="number" name="y" value="{{ character_data['Y'] }}" placeholder="Y" class="editbox"><br>
+                <input type="number" name="z" value="{{ character_data['Z'] }}" placeholder="Z" class="editbox"><br>
 
                 <button type="submit">อัปเดตข้อมูล</button>
             </form>
