@@ -29,7 +29,7 @@
         form {
             margin-bottom: 20px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             padding: 8px;
             width: 250px;
             font-size: 16px;
@@ -95,6 +95,31 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <h2>อัปเดตข้อมูลตัวละคร</h2>
+            <form method="post" action="/update">
+                <input type="text" name="charname" value="{{ character_data['Character Name'] }}" required>
+                <input type="number" name="level" value="{{ character_data['Level'] }}" placeholder="Level">
+                <input type="number" name="exp" value="{{ character_data['EXP'] }}" placeholder="EXP">
+                <input type="number" name="ecLv" value="{{ character_data['ecLv'] }}" placeholder="ecLv">
+                <input type="number" name="ecEXP" value="{{ character_data['ecEXP'] }}" placeholder="ecEXP">
+                <input type="number" name="str" value="{{ character_data['STR'] }}" placeholder="STR">
+                <input type="number" name="lvpoint" value="{{ character_data['LvPoint'] }}" placeholder="LvPoint">
+                <input type="number" name="dex" value="{{ character_data['DEX'] }}" placeholder="DEX">
+                <input type="number" name="skpoint" value="{{ character_data['SkPoint'] }}" placeholder="SkPoint">
+                <input type="number" name="esp" value="{{ character_data['ESP'] }}" placeholder="ESP">
+                <input type="number" name="lic" value="{{ character_data['LIC'] }}" placeholder="LIC">
+                <input type="number" name="spt" value="{{ character_data['SPT'] }}" placeholder="SPT">
+                <input type="number" name="money" value="{{ character_data['Money'] }}" placeholder="Money">
+                <input type="number" name="int" value="{{ character_data['INT'] }}" placeholder="INT">
+                <input type="number" name="bankmoney" value="{{ character_data['Bank'] }}" placeholder="Bank">
+                <input type="text" name="cmap" value="{{ character_data['Map'] }}" placeholder="Map">
+                <input type="text" name="hero" value="{{ character_data['Hero'] }}" placeholder="Hero">
+                <input type="number" name="x" value="{{ character_data['X'] }}" placeholder="X">
+                <input type="number" name="y" value="{{ character_data['Y'] }}" placeholder="Y">
+                <input type="number" name="z" value="{{ character_data['Z'] }}" placeholder="Z">
+                <button type="submit">อัปเดตข้อมูล</button>
+            </form>
         {% endif %}
     {% endif %}
 
