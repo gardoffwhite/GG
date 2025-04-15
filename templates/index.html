@@ -70,6 +70,7 @@
         </div>
     {% endif %}
 
+    <!-- ฟอร์มค้นหาตัวละคร -->
     <form method="post">
         <input type="text" name="charname" placeholder="กรอกชื่อตัวละคร" required>
         <button type="submit">ค้นหา</button>
@@ -98,6 +99,9 @@
 
             <h2>อัปเดตข้อมูลตัวละคร</h2>
             <form method="post" action="/update">
+                <!-- ส่งค่าชื่อตัวละครเดิมไปด้วย -->
+                <input type="hidden" name="charname" value="{{ character_data['Character Name'] }}">
+                
                 <input type="text" name="charname" value="{{ character_data['Character Name'] }}" required>
                 <input type="number" name="level" value="{{ character_data['Level'] }}" placeholder="Level">
                 <input type="number" name="exp" value="{{ character_data['EXP'] }}" placeholder="EXP">
@@ -118,6 +122,7 @@
                 <input type="number" name="x" value="{{ character_data['X'] }}" placeholder="X">
                 <input type="number" name="y" value="{{ character_data['Y'] }}" placeholder="Y">
                 <input type="number" name="z" value="{{ character_data['Z'] }}" placeholder="Z">
+                
                 <button type="submit">อัปเดตข้อมูล</button>
             </form>
         {% endif %}
