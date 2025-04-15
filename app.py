@@ -126,6 +126,7 @@ def update():
     if not character_name:
         return render_template('index.html', status_message="❌ กรุณากรอกชื่อของตัวละคร")
 
+    # ดึงข้อมูลเดิมจากระบบแอดมิน
     character_data = get_character_data_from_admin(character_name)
     if character_data:
         # อัปเดตข้อมูลที่ได้รับจากฟอร์ม
@@ -134,9 +135,50 @@ def update():
         if exp:
             character_data['EXP'] = exp
 
-        # หากต้องการอัปเดตข้อมูลอื่นๆ เพิ่มเติมสามารถเพิ่มได้ที่นี่
+        # ส่งข้อมูลไปยังระบบแอดมินเพื่ออัปเดต
+        update_payload = {
+            "charname": character_name,
+            "level": character_data['Level'],
+            "exp": character_data['EXP'],
+            "eclv": character_data['ecLv'],
+            "ecexp": character_data['ecEXP'],
+            "str": character_data['STR'],
+            "lvpoint": character_data['LvPoint'],
+            "dex": character_data['DEX'],
+            "skpoint": character_data['SkPoint'],
+            "esp": character_data['ESP'],
+            "lic": character_data['LIC'],
+            "spt": character_data['SPT'],
+            "money": character_data['Money'],
+            "int": character_data['INT'],
+            "bankmoney": character_data['Bank'],
+            "cmap": character_data['Map'],
+            "hero": character_data['Hero'],
+            "x": character_data['X'],
+            "y": character_data['Y'],
+            "z": character_data['Z']
+        }
 
-        return render_template('index.html', character_data=character_data, status_message="✅ อัปเดตข้อมูลสำเร็จ")
+        # ส่งคำขอ POST ไปยังหน้า charedit.php สำหรับอัปเดตข้อมูล
+        try:
+            update_resp = session.post(charedit_url, data=update_payload, headers=headers, timeout=timeout_time)
+            if update_resp.status_code == 200:
+                # ดึงข้อมูลหลังจากอัปเดต
+                updated_data = get_character_data_from_admin(character_name)
+                if updated_data:
+                    # ตรวจสอบว่าข้อมูลที่อัปเดตตรงกับข้อมูลที่ส่งไป
+                    if updated_data['Level'] == level and updated_data['EXP'] == exp:
+                        status_message = "✅ อัปเดตข้อมูลสำเร็จ"
+                    else:
+                        status_message = "❌ อัปเดตข้อมูลไม่สำเร็จ"
+                else:
+                    status_message = "❌ ไม่สามารถดึงข้อมูลหลังอัปเดต"
+            else:
+                status_message = "❌ ไม่สามารถอัปเดตข้อมูลได้"
+        except Exception as e:
+            status_message = f"⚠️ เกิดข้อผิดพลาดในการอัปเดตข้อมูล: {e}"
+
+        return render_template('index.html', character_data=updated_data, status_message=status_message)
     else:
         return render_template('index.html', status_message="❌ ไม่สามารถดึงข้อมูลตัวละครได้")
 
