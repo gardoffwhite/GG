@@ -95,64 +95,64 @@
             <h3>อัปเดตข้อมูลตัวละคร</h3>
 
             <label for="charname">ชื่อตัวละคร:</label><br>
-            <input type="text" id="charname" name="charname" value="{{ character_data['Character Name'] }}"><br><br>
+            <input type="text" id="charname" name="charname" value="{{ character_data.get('Character Name', '') }}"><br><br>
 
             <label for="level">เลเวล:</label><br>
-            <input type="text" id="level" name="level" value="{{ character_data['Level'] }}"><br><br>
+            <input type="text" id="level" name="level" value="{{ character_data.get('Level', '') }}"><br><br>
 
             <label for="exp">EXP:</label><br>
-            <input type="text" id="exp" name="exp" value="{{ character_data['EXP'] }}"><br><br>
+            <input type="text" id="exp" name="exp" value="{{ character_data.get('EXP', '') }}"><br><br>
 
             <label for="eclv">ecLv:</label><br>
-            <input type="text" id="eclv" name="eclv" value="{{ character_data['ecLv'] }}"><br><br>
+            <input type="text" id="eclv" name="eclv" value="{{ character_data.get('ecLv', '') }}"><br><br>
 
             <label for="ecexp">ecEXP:</label><br>
-            <input type="text" id="ecexp" name="ecexp" value="{{ character_data['ecEXP'] }}"><br><br>
+            <input type="text" id="ecexp" name="ecexp" value="{{ character_data.get('ecEXP', '') }}"><br><br>
 
             <label for="str">STR:</label><br>
-            <input type="text" id="str" name="str" value="{{ character_data['STR'] }}"><br><br>
+            <input type="text" id="str" name="str" value="{{ character_data.get('STR', '') }}"><br><br>
 
             <label for="lvpoint">LvPoint:</label><br>
-            <input type="text" id="lvpoint" name="lvpoint" value="{{ character_data['LvPoint'] }}"><br><br>
+            <input type="text" id="lvpoint" name="lvpoint" value="{{ character_data.get('LvPoint', '') }}"><br><br>
 
             <label for="dex">DEX:</label><br>
-            <input type="text" id="dex" name="dex" value="{{ character_data['DEX'] }}"><br><br>
+            <input type="text" id="dex" name="dex" value="{{ character_data.get('DEX', '') }}"><br><br>
 
             <label for="skpoint">SkPoint:</label><br>
-            <input type="text" id="skpoint" name="skpoint" value="{{ character_data['SkPoint'] }}"><br><br>
+            <input type="text" id="skpoint" name="skpoint" value="{{ character_data.get('SkPoint', '') }}"><br><br>
 
             <label for="esp">ESP:</label><br>
-            <input type="text" id="esp" name="esp" value="{{ character_data['ESP'] }}"><br><br>
+            <input type="text" id="esp" name="esp" value="{{ character_data.get('ESP', '') }}"><br><br>
 
             <label for="lic">LIC:</label><br>
-            <input type="text" id="lic" name="lic" value="{{ character_data['LIC'] }}"><br><br>
+            <input type="text" id="lic" name="lic" value="{{ character_data.get('LIC', '') }}"><br><br>
 
             <label for="spt">SPT:</label><br>
-            <input type="text" id="spt" name="spt" value="{{ character_data['SPT'] }}"><br><br>
+            <input type="text" id="spt" name="spt" value="{{ character_data.get('SPT', '') }}"><br><br>
 
             <label for="money">Money:</label><br>
-            <input type="text" id="money" name="money" value="{{ character_data['Money'] }}"><br><br>
+            <input type="text" id="money" name="money" value="{{ character_data.get('Money', '') }}"><br><br>
 
             <label for="int">INT:</label><br>
-            <input type="text" id="int" name="int" value="{{ character_data['INT'] }}"><br><br>
+            <input type="text" id="int" name="int" value="{{ character_data.get('INT', '') }}"><br><br>
 
             <label for="bankmoney">Bank:</label><br>
-            <input type="text" id="bankmoney" name="bankmoney" value="{{ character_data['Bank'] }}"><br><br>
+            <input type="text" id="bankmoney" name="bankmoney" value="{{ character_data.get('Bank', '') }}"><br><br>
 
             <label for="cmap">Map:</label><br>
-            <input type="text" id="cmap" name="cmap" value="{{ character_data['Map'] }}"><br><br>
+            <input type="text" id="cmap" name="cmap" value="{{ character_data.get('Map', '') }}"><br><br>
 
             <label for="hero">Hero:</label><br>
-            <input type="text" id="hero" name="hero" value="{{ character_data['Hero'] }}"><br><br>
+            <input type="text" id="hero" name="hero" value="{{ character_data.get('Hero', '') }}"><br><br>
 
             <label for="x">X:</label><br>
-            <input type="text" id="x" name="x" value="{{ character_data['X'] }}"><br><br>
+            <input type="text" id="x" name="x" value="{{ character_data.get('X', '') }}"><br><br>
 
             <label for="y">Y:</label><br>
-            <input type="text" id="y" name="y" value="{{ character_data['Y'] }}"><br><br>
+            <input type="text" id="y" name="y" value="{{ character_data.get('Y', '') }}"><br><br>
 
             <label for="z">Z:</label><br>
-            <input type="text" id="z" name="z" value="{{ character_data['Z'] }}"><br><br>
+            <input type="text" id="z" name="z" value="{{ character_data.get('Z', '') }}"><br><br>
 
             <button type="submit">บันทึกการเปลี่ยนแปลง</button>
         </form>
