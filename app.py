@@ -138,11 +138,18 @@ def index():
 # ฟังก์ชันอัปเดตข้อมูลตัวละคร
 @app.route('/update', methods=['POST'])
 @app.route('/update', methods=['POST'])
+@app.route('/update', methods=['POST'])
 def update():
     character_name = request.form['charname']
     if not character_name:
         return render_template('index.html', status_message="❌ กรุณากรอกชื่อของตัวละคร")
 
+    # ตรวจสอบว่ามีชื่อตัวละครนี้จริงหรือไม่
+    character_data = get_character_data_from_admin(character_name)
+    if not character_data:
+        return render_template('index.html', status_message="❌ ไม่พบชื่อตัวละครนี้ในระบบ")
+
+    # ดึงข้อมูลจากฟอร์มเพื่ออัปเดต
     data = {
         "charname": character_name,
         "lv": request.form.get('level', ''),
@@ -166,11 +173,18 @@ def update():
         "z": request.form.get('z', '')
     }
 
-    success = update_character_with_selenium(data)
-    if success:
-        return render_template('index.html', status_message="✅ อัปเดตตัวละครสำเร็จ")
-    else:
-        return render_template('index.html', status_message="❌ ไม่สามารถอัปเดตตัวละครได้")
+    try:
+        # อัปเดตด้วย selenium
+        success = update_character_with_selenium(data)
+        if success:
+            # ดึงข้อมูลล่าสุดกลับมาแสดง
+            updated_data = get_character_data_from_admin(character_name)
+            return render_template('index.html', character_data=updated_data, status_message="✅ อัปเดตตัวละครสำเร็จ")
+        else:
+            return render_template('index.html', character_data=character_data, status_message="❌ ไม่สามารถอัปเดตตัวละครได้")
+    except Exception as e:
+        print(f"⚠️ เกิดข้อผิดพลาดในการส่งข้อมูลอัปเดต: {e}")
+        return render_template('index.html', character_data=character_data, status_message="❌ เกิดข้อผิดพลาดในการอัปเดตข้อมูล")
 
       
 
