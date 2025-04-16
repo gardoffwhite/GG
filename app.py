@@ -137,8 +137,6 @@ def index():
 
 # ฟังก์ชันอัปเดตข้อมูลตัวละคร
 @app.route('/update', methods=['POST'])
-@app.route('/update', methods=['POST'])
-@app.route('/update', methods=['POST'])
 def update():
     character_name = request.form['charname']
     if not character_name:
@@ -185,8 +183,6 @@ def update():
     except Exception as e:
         print(f"⚠️ เกิดข้อผิดพลาดในการส่งข้อมูลอัปเดต: {e}")
         return render_template('index.html', character_data=character_data, status_message="❌ เกิดข้อผิดพลาดในการอัปเดตข้อมูล")
-
-      
 
 # เริ่มต้นแอปพลิเคชัน
 if __name__ == '__main__':
