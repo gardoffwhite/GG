@@ -127,6 +127,7 @@ def index():
     if request.method == 'POST':
         character_name = request.form['charname']
         if character_name:
+            # ดึงข้อมูลตัวละครก่อนการอัปเดต
             character_data = get_character_data_from_admin(character_name)
             if not character_data:
                 character_data = {"error": "❌ ไม่สามารถดึงข้อมูลตัวละครได้"}
@@ -175,7 +176,7 @@ def update():
         # อัปเดตด้วย selenium
         success = update_character_with_selenium(data)
         if success:
-            # ดึงข้อมูลล่าสุดกลับมาแสดง
+            # ดึงข้อมูลล่าสุดกลับมาแสดงเพียงครั้งเดียว
             updated_data = get_character_data_from_admin(character_name)
             return render_template('index.html', character_data=updated_data, status_message="✅ อัปเดตตัวละครสำเร็จ")
         else:
