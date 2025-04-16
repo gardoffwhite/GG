@@ -1,3 +1,4 @@
+from selenium_updater import update_character_with_selenium
 from flask import Flask, render_template, request
 import os
 import requests
