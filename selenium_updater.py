@@ -1,4 +1,3 @@
-# selenium_updater.py
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,8 +19,9 @@ def update_character_with_selenium(data):
 
         # ไปหน้าแก้ไข
         driver.get(url_edit)
-        wait.until(EC.presence_of_element_located((By.NAME, "charname"))).send_keys(data["charname"])
-        driver.find_element(By.NAME, "searchname").click()
+        # ไม่จำเป็นต้องกรอก charname เพราะไม่ได้ระบุใน HTML
+        # wait.until(EC.presence_of_element_located((By.NAME, "charname"))).send_keys(data["charname"])
+        # driver.find_element(By.NAME, "searchname").click()  # คอมเมนต์ถ้าปุ่ม searchname ไม่มีใน HTML
 
         wait.until(EC.presence_of_element_located((By.NAME, "lv")))  # รอให้โหลดหน้าเสร็จก่อนกรอก
 
@@ -31,11 +31,12 @@ def update_character_with_selenium(data):
                 input_field = driver.find_element(By.NAME, key)
                 input_field.clear()
                 input_field.send_keys(value)
-            except:
+            except Exception as e:
+                print(f"⚠️ Error filling {key}: {e}")
                 pass  # ข้ามถ้าไม่มีฟิลด์นั้น
 
         # กดอัปเดต
-        driver.find_element(By.NAME, "submit").click()
+        driver.find_element(By.NAME, "update").click()  # ปรับเป็นชื่อปุ่มที่ใช้ในฟอร์ม
 
         return True
     except Exception as e:
